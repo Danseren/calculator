@@ -16,4 +16,5 @@
     <string name="btn_subtr">-</string>
     <string name="btn_add">+</string>
     <string name="btn_result">=</string>
+    <string name="btn_clear">CLEAR ALL</string>
 </resources>
