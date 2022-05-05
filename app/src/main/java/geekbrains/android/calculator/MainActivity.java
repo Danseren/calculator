@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     //Доработать логику действий. Не забыть что после равно нажимая цифры нужно обнулять tv_result
-    //Не забыть добавить сохранение данных как было на уроке
 
     private void innitViews() {
 
@@ -302,6 +301,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 }
+
+/*
+1. Переделайте все кнопки на материал.
+2. Все размеры и строки сделайте ресурсами.
+3. Создайте стиль для своего приложения.
+4. * Создайте светлую и тёмную тему для приложения.
+
+ */
+
 
 /*
 L3:
