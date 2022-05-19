@@ -3,6 +3,7 @@ package geekbrains.android.calculator;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,26 +12,61 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private Button btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9, btn_0, btn_dot, btn_div, btn_mult, btn_subtr, btn_add, btn_result, btn_clear;
+    private Button btn_1, btn_2, btn_3, btn_4, btn_5, btn_6, btn_7, btn_8, btn_9, btn_0, btn_dot, btn_div, btn_mult, btn_subtr, btn_add, btn_result, btn_clear, btn_settings;
     private TextView tv_result, tv_History;
     private Calculator calc = new Calculator();
 
     private String calcTag = "calcTag";
     private String tvResultTag = "tvResTag";
+    static final String THEME_KEY = "THEME_KEY";
 
     private String result;
+    private String currentTheme;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        try {
+            currentTheme = getIntent().getExtras().getString(THEME_KEY, "MyCoolStyle?!");
+        } catch (NullPointerException exp) {
+            Toast.makeText(MainActivity.this, "Ooops!", Toast.LENGTH_LONG).show();
+            currentTheme = "";
+        }
+
+        if (currentTheme.equals("")) {
+            setTheme(R.style.MyCoolStyle);
+        } else {
+            switch (currentTheme) {
+                case "0":
+                    Toast.makeText(MainActivity.this, "AppTheme!", Toast.LENGTH_LONG).show();
+                    setTheme(R.style.AppTheme);
+                    break;
+                case "1":
+                    Toast.makeText(MainActivity.this, "AppThemeDark!", Toast.LENGTH_LONG).show();
+                    setTheme(R.style.AppThemeDark);
+                    break;
+                case "2":
+                    Toast.makeText(MainActivity.this, "AppThemeLight!", Toast.LENGTH_LONG).show();
+                    setTheme(R.style.AppThemeLight);
+                    break;
+                default:
+                    Toast.makeText(MainActivity.this, currentTheme, Toast.LENGTH_LONG).show();
+                    setTheme(R.style.MyCoolStyle);
+                    break;
+            }
+        }
+
+
         setContentView(R.layout.activity_main);
 
         innitViews();
 
     }
 
-    //Доработать логику действий. Не забыть что после равно нажимая цифры нужно обнулять tv_result
-
+    /**
+     * Инициальзация элементов MainActivity
+     */
     private void innitViews() {
 
         btn_0 = findViewById(R.id.btn_0);
@@ -50,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_add = findViewById(R.id.btn_add);
         btn_result = findViewById(R.id.btn_result);
         btn_clear = findViewById(R.id.btn_clear);
+        btn_settings = findViewById(R.id.btn_settings);
 
         tv_result = findViewById(R.id.tv_result);
         tv_History = findViewById(R.id.tv_History);
@@ -57,6 +94,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initOnClickListeners();
     }
 
+    /**
+     * Вешаем Listener на кнопки
+     */
     private void initOnClickListeners() {
 
         btn_0.setOnClickListener(this);
@@ -76,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_add.setOnClickListener(this);
         btn_result.setOnClickListener(this);
         btn_clear.setOnClickListener(this);
+        btn_settings.setOnClickListener(this);
     }
 
     @Override
@@ -93,24 +134,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tv_result.setText(result);
     }
 
+    /**
+     * Обработка нажатий на кнопки цифр и точку
+     * @param a символ на кнопке
+     */
     private void btnSymbolsWork(String a) {
 
         switch (tv_result.getText().length()) {
             case 0:
                 if (a.equals(".")) {
-                    calc.setHistory("0.");
-                    tv_result.setText(calc.getHistory());
-                    Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
+                    calc.setHistory(calc.getHistory() + "0.");
+                    tv_result.setText("0.");
+                    //Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
                 } else {
-                    calc.setHistory(a);
-                    tv_result.setText(calc.getHistory());
-                    Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
+                    calc.setHistory(calc.getHistory() + a);
+                    tv_result.setText(a);
+                    //Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
                 }
                 break;
             case 1:
                 calc.setHistory(calc.getHistory() + a);
-                tv_result.setText(calc.getHistory());
-                Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
+                tv_result.setText(tv_result.getText() + a);
+                //Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
                 break;
             default:
                 if (a.equals(".")) {
@@ -124,78 +169,107 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Toast.makeText(MainActivity.this, "Давай не будем использовать больше одной точки, Ок?", Toast.LENGTH_SHORT).show();
                     } else {
                         calc.setHistory(calc.getHistory() + a);
-                        tv_result.setText(calc.getHistory());
-                        Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
+                        tv_result.setText(tv_result.getText() + a);
+                        //Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
                     }
                 } else {
                     calc.setHistory(calc.getHistory() + a);
-                    tv_result.setText(calc.getHistory());
-                    Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
+                    tv_result.setText(tv_result.getText() + a);
+                    //Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
                 }
         }
 
     }
 
+    /**
+     * Проверка на пустое значение с помощью длины
+     * @param a
+     * @return
+     */
     public boolean checkByNull(String a) {
         return a.length() == 0;
     }
 
-    public void operation1(String str) {
+    /**
+     * Обработка нажатий на кнопку =
+     * @param str
+     */
+    public void operationResult(String str) {
 
-        calc.setSecondNumber(Double.parseDouble(String.valueOf(tv_result.getText())));
+        calc.setSecondNumber(String.valueOf(tv_result.getText()));
 
         switch (str) {
             case "/":
-                calc.setLastResult(String.valueOf(calc.getFirstNumber() / calc.getSecondNumber()));
-                calc.setHistory(calc.getHistory() + "/" +  calc.getSecondNumber() + "=" + calc.getLastResult());
+                if (calc.getSecondNumber().equals("0")) {
+                    Toast.makeText(MainActivity.this, "Давай не будем делить на ноль. Механизм дальше не продуман, так что ВСЁ обнуляется :)", Toast.LENGTH_LONG).show();
+                    tv_result.setText("");
+                    calc.setFirstNumber("");
+                    calc.setSecondNumber("");
+                    calc.setHistory("");
+                    calc.setLastResult("");
+                    calc.setCurrentOperation("");
+                    tv_History.setText("");
+                } else {
+                    calc.setLastResult(String.valueOf(Double.parseDouble(calc.getFirstNumber()) / Double.parseDouble(calc.getSecondNumber())));
+                    calc.setHistory(calc.getHistory() + "=" + calc.getLastResult());
+                }
                 break;
             case "*":
-                calc.setLastResult(String.valueOf(calc.getFirstNumber() * calc.getSecondNumber()));
-                calc.setHistory(calc.getHistory() + "*" +  calc.getSecondNumber() + "=" + calc.getLastResult());
+                calc.setLastResult(String.valueOf(Double.parseDouble(calc.getFirstNumber()) * Double.parseDouble(calc.getSecondNumber())));
+                calc.setHistory(calc.getHistory() + "=" + calc.getLastResult());
                 break;
             case "+":
-                calc.setLastResult(String.valueOf(calc.getFirstNumber() + calc.getSecondNumber()));
-                calc.setHistory(calc.getHistory() + "+" +  calc.getSecondNumber() + "=" + calc.getLastResult());
+                calc.setLastResult(String.valueOf(Double.parseDouble(calc.getFirstNumber()) + Double.parseDouble(calc.getSecondNumber())));
+                calc.setHistory(calc.getHistory() + "=" + calc.getLastResult());
                 break;
             case "-":
-                calc.setLastResult(String.valueOf(calc.getFirstNumber() - calc.getSecondNumber()));
-                calc.setHistory(calc.getHistory() + "-" +  calc.getSecondNumber() + "=" + calc.getLastResult());
+                calc.setLastResult(String.valueOf(Double.parseDouble(calc.getFirstNumber()) - Double.parseDouble(calc.getSecondNumber())));
+                calc.setHistory(calc.getHistory() + "=" + calc.getLastResult());
                 break;
         }
 
         tv_result.setText(calc.getLastResult());
-        Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
-        calc.setFirstNumber(0);
-        calc.setSecondNumber(0);
+        //Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
+        calc.setFirstNumber("");
+        calc.setSecondNumber("");
         calc.setCurrentOperation("=");
-        Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
+        //Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
         tv_History.setText(calc.getHistory());
     }
 
-    public void operation2(String str) {
+    /**
+     * Обработка нажатий на кнопки + - * /
+     * @param str символ на кнопке
+     */
+    public void operationAction(String str) {
 
         if (checkByNull(String.valueOf(tv_result.getText()))) {
             Toast.makeText(MainActivity.this, "Сначала нужно ввести число", Toast.LENGTH_SHORT).show();
-        } else if (String.valueOf(calc.getFirstNumber()).equals("0.0")){
-            calc.setFirstNumber(Double.parseDouble(String.valueOf(tv_result.getText())));
+        } else if (String.valueOf(calc.getFirstNumber()).equals("")){
+            calc.setFirstNumber(String.valueOf(tv_result.getText()));
 
             switch (str) {
                 case "/":
                     calc.setCurrentOperation("/");
+                    calc.setHistory(calc.getHistory() + "/");
+                    //Toast.makeText(MainActivity.this, "!!!!!!!!!!!!!!!!!", Toast.LENGTH_SHORT).show();
                     break;
                 case "*":
                     calc.setCurrentOperation("*");
+                    calc.setHistory(calc.getHistory() + "*");
                     break;
                 case "+":
                     calc.setCurrentOperation("+");
+                    calc.setHistory(calc.getHistory() + "+");
                     break;
                 case "-":
                     calc.setCurrentOperation("-");
+                    calc.setHistory(calc.getHistory() + "-");
                     break;
             }
 
             tv_result.setText("");
-            Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
+            //Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(MainActivity.this, "????!!!!", Toast.LENGTH_LONG).show();
         }
@@ -252,19 +326,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_div:
 
-                operation2("/");
+                operationAction("/");
                 break;
             case R.id.btn_mult:
 
-                operation2("*");
+                operationAction("*");
                 break;
             case R.id.btn_subtr:
 
-                operation2("-");
+                operationAction("-");
                 break;
             case R.id.btn_add:
 
-                operation2("+");
+                operationAction("+");
                 break;
             case R.id.btn_result:
 
@@ -272,16 +346,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     switch (calc.getCurrentOperation()) {
                         case "/":
-                            operation1("/");
+                            operationResult("/");
                             break;
                         case "*":
-                            operation1("*");
+                            operationResult("*");
                             break;
                         case "+":
-                            operation1("+");
+                            operationResult("+");
                             break;
                         case "-":
-                            operation1("-");
+                            operationResult("-");
                             break;
                     }
                 } else {
@@ -290,17 +364,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btn_clear:
                 tv_result.setText("");
-                calc.setFirstNumber(0);
-                calc.setSecondNumber(0);
+                calc.setFirstNumber("");
+                calc.setSecondNumber("");
                 calc.setHistory("");
                 calc.setLastResult("");
                 calc.setCurrentOperation("");
                 tv_History.setText("");
                 Toast.makeText(MainActivity.this, calc.toString(), Toast.LENGTH_LONG).show();
                 break;
+            case R.id.btn_settings:
+                Intent intentSettingsActivity = new Intent(this, SettingsActivity.class);
+                startActivity(intentSettingsActivity);
+                break;
         }
     }
 }
+
+/*
+1. Создайте активити с настройками, где включите выбор темы приложения.
+2. Доделайте приложение «Калькулятор». Это последний урок с созданием приложения «Калькулятор». !!!НЕ ЗАБУДЬ ПРО ДЕЛЕНИЕ НА НОЛЬ!!!
+3. * Сделайте интент-фильтр для запуска калькулятора извне, а также напишите тестовое приложение, запускающее приложение-калькулятор.
+ */
+
 
 /*
 1. Переделайте все кнопки на материал.

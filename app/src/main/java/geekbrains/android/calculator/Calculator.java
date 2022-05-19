@@ -6,16 +6,18 @@ import android.os.Parcelable;
 public class Calculator implements Parcelable {
 
     private String history;
-    private double firstNumber;
-    private double secondNumber;
+    private String firstNumber;
+    private String secondNumber;
     private String currentOperation;
     private String lastResult;
 
     public Calculator() {
-
+        firstNumber = "";
+        secondNumber = "";
+        history = "";
     }
 
-    public Calculator(String history, double firstNumber, double secondNumber, String currentOperation, String lastResult) {
+    public Calculator(String history, String firstNumber, String secondNumber, String currentOperation, String lastResult) {
         this.history = history;
         this.firstNumber = firstNumber;
         this.secondNumber = secondNumber;
@@ -25,8 +27,8 @@ public class Calculator implements Parcelable {
 
     protected Calculator(Parcel in) {
         history = in.readString();
-        firstNumber = in.readDouble();
-        secondNumber = in.readDouble();
+        firstNumber = in.readString();
+        secondNumber = in.readString();
         currentOperation = in.readString();
         lastResult = in.readString();
     }
@@ -51,19 +53,19 @@ public class Calculator implements Parcelable {
         this.history = history;
     }
 
-    public double getFirstNumber() {
+    public String getFirstNumber() {
         return firstNumber;
     }
 
-    public void setFirstNumber(double firstNumber) {
+    public void setFirstNumber(String firstNumber) {
         this.firstNumber = firstNumber;
     }
 
-    public double getSecondNumber() {
+    public String getSecondNumber() {
         return secondNumber;
     }
 
-    public void setSecondNumber(double secondNumber) {
+    public void setSecondNumber(String secondNumber) {
         this.secondNumber = secondNumber;
     }
 
@@ -91,8 +93,8 @@ public class Calculator implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(history);
-        parcel.writeDouble(firstNumber);
-        parcel.writeDouble(secondNumber);
+        parcel.writeString(firstNumber);
+        parcel.writeString(secondNumber);
         parcel.writeString(currentOperation);
         parcel.writeString(lastResult);
     }
